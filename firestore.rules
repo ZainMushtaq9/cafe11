@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'zainmushtaq5439@gmail.com' ||
+        (exists(/databases/$(database)/documents/userRoles/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/userRoles/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    match /userRoles/{userId} {
+      allow get: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      allow write: if false; // Only admin can create them, done via backend/console for security
+    }
+
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.price is number && data.price >= 0 &&
+             data.category is string && data.category.size() > 0 && data.category.size() <= 50 &&
+             data.get('description', '') is string && data.get('description', '').size() <= 1000 &&
+             data.get('imageUrl', '') is string && data.get('imageUrl', '').size() <= 500000 &&
+             data.get('averageRating', 0) is number;
+    }
+
+    function hasExactlyProductKeys(data) {
+      return data.keys().hasAll(['name', 'price', 'category']) && (data.keys().size() >= 3 && data.keys().size() <= 6);
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidId(productId) && isValidProduct(incoming()) && hasExactlyProductKeys(incoming());
+      allow update: if isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'price', 'category', 'description', 'imageUrl', 'averageRating']);
+      allow delete: if isAdmin() && isValidId(productId);
+
+      function isValidReview(data, pid) {
+        return data.productId == pid &&
+               data.userId == request.auth.uid &&
+               data.userName is string && data.userName.size() > 0 && data.userName.size() <= 60 &&
+               data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+               data.get('text', '') is string && data.get('text', '').size() <= 500 &&
+               data.createdAt is string && data.createdAt.size() <= 50;
+      }
+      
+      function hasExactlyReviewKeys(data) {
+        return data.keys().hasAll(['productId', 'userId', 'userName', 'rating', 'createdAt']) && (data.keys().size() >= 5 && data.keys().size() <= 6);
+      }
+
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if isAuthenticated() && 
+                      isValidId(productId) && 
+                      isValidId(reviewId) &&
+                      isValidReview(incoming(), productId) && 
+                      hasExactlyReviewKeys(incoming()) &&
+                      exists(/databases/$(database)/documents/products/$(productId));
+        allow update: if isAuthenticated() && 
+                      isValidId(productId) && 
+                      isValidId(reviewId) &&
+                      existing().userId == request.auth.uid &&
+                      isValidReview(incoming(), productId) && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['rating', 'text', 'createdAt']);
+        allow delete: if isAuthenticated() && (existing().userId == request.auth.uid || isAdmin());
+      }
+    }
+
+    function isValidOrder(data) {
+      return data.userId == request.auth.uid &&
+             data.userName is string && data.userName.size() > 0 && data.userName.size() <= 100 &&
+             data.phoneNumber is string && data.phoneNumber.size() >= 5 && data.phoneNumber.size() <= 20 &&
+             data.address is string && data.address.size() > 0 && data.address.size() <= 500 &&
+             data.get('specialInstruction', '') is string && data.get('specialInstruction', '').size() <= 500 &&
+             data.items is list && data.items.size() > 0 && data.items.size() <= 50 &&
+             data.total is number && data.total >= 0 &&
+             data.status is string && data.status.size() > 0 && data.status.size() <= 20 &&
+             data.createdAt is string && data.createdAt.size() <= 50;
+    }
+    
+    function hasExactlyOrderKeys(data) {
+       return data.keys().hasAll(['userId', 'userName', 'phoneNumber', 'address', 'items', 'total', 'status', 'createdAt']) && 
+              (data.keys().size() >= 8 && data.keys().size() <= 9);
+    }
+
+    match /orders/{orderId} {
+      allow get: if isAuthenticated() && (isAdmin() || existing().userId == request.auth.uid);
+      allow list: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && 
+                    isValidId(orderId) &&
+                    isValidOrder(incoming()) && 
+                    hasExactlyOrderKeys(incoming()) &&
+                    incoming().status == 'new';
+      allow update: if isAuthenticated() && isValidId(orderId) && (
+        (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['status'])) ||
+        (existing().userId == request.auth.uid && incoming().diff(existing()).affectedKeys().hasOnly(['status']) && incoming().status == 'cancelled' && existing().status == 'new')
+      );
+      allow delete: if isAdmin() && isValidId(orderId);
+    }
+  }
+}
