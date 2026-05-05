@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import React, { useState, useEffect, useRef } from "react"
-import { ShoppingCart, LogIn, LogOut, Menu, Star, MapPin, Phone, MessageCircle, Utensils, StarHalf, Plus, Minus, Settings } from "lucide-react"
+import { ShoppingCart, LogIn, LogOut, Menu, Star, MapPin, Phone, MessageCircle, Utensils, StarHalf, Plus, Minus, Settings, Clock } from "lucide-react"
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, User, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, getDocs, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, getDocFromServer, serverTimestamp } from "firebase/firestore";
@@ -163,7 +163,7 @@ function AuthDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (o: b
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isLogin ? 'Welcome Back To Cafe 11' : 'Create an Account'}</DialogTitle>
+          <DialogTitle>{isLogin ? 'Welcome Back To Dasi Sweets' : 'Create an Account'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleEmailAuth} className="space-y-4 py-4">
           {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
@@ -246,7 +246,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [cartItems, setCartItems] = useState<any[]>(() => {
     try {
-      const saved = localStorage.getItem('cafe11_cart');
+      const saved = localStorage.getItem('dasi_sweets_cart');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -256,18 +256,18 @@ function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const handleCartUpdate = () => {
       try {
-        const saved = localStorage.getItem('cafe11_cart');
+        const saved = localStorage.getItem('dasi_sweets_cart');
         if (saved) setCartItems(JSON.parse(saved));
       } catch(e){}
     };
     
-    window.addEventListener('cafe11_cartUpdate', handleCartUpdate);
-    return () => window.removeEventListener('cafe11_cartUpdate', handleCartUpdate);
+    window.addEventListener('dasi_sweets_cartUpdate', handleCartUpdate);
+    return () => window.removeEventListener('dasi_sweets_cartUpdate', handleCartUpdate);
   }, []);
 
   useEffect(() => {
     const saveCart = setTimeout(() => {
-        localStorage.setItem('cafe11_cart', JSON.stringify(cartItems));
+        localStorage.setItem('dasi_sweets_cart', JSON.stringify(cartItems));
     }, 100);
     return () => clearTimeout(saveCart);
   }, [cartItems]);
@@ -284,33 +284,33 @@ function Layout({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="bg-orange-500 text-white p-1.5 rounded-lg group-hover:bg-orange-600 transition-colors">
-              <Utensils className="w-5 h-5" />
+            <div className="bg-[#E85D04] text-white font-black text-xl w-8 h-8 flex items-center justify-center rounded-lg group-hover:bg-[#D00000] transition-colors">
+              DS
             </div>
-            <span className="text-xl font-bold tracking-tight text-zinc-900 group-hover:text-orange-600 transition-colors">Café Eleven</span>
+            <span className="text-xl font-bold tracking-tight text-zinc-900 group-hover:text-[#E85D04] transition-colors">Dasi Sweets</span>
           </Link>
           
           <div className="flex items-center gap-2 sm:gap-4">
             <Dialog>
-              <DialogTrigger className="hidden md:flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-orange-600 transition-colors">
-                 <span>About Cafe 11</span>
+              <DialogTrigger className="hidden md:flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-[#E85D04] transition-colors">
+                 <span>About Dasi Sweets</span>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md bg-white">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-serif text-[#370617]">About Café Eleven</DialogTitle>
+                  <DialogTitle className="text-2xl font-serif text-[#370617]">About Dasi Sweets & Bakers</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 text-zinc-600 mt-2 leading-relaxed">
                   <p>
-                    Café Eleven brings you a perfect blend of fast food classics and rich desi flavors. Founded with a passion for high-quality food and a warm, inviting ambiance.
+                    Dasi Sweets & Bakers brings you a perfect blend of high quality traditional sweets, fresh bakery items, and custom celebration cakes.
                   </p>
                   <p>
-                    Whether you're visiting our Coffee Bar Section, enjoying the fresh air in our External Refreshment area, or having a family dinner at our Dining Tables, we aim to provide an unforgettable experience.
+                    From our signature sweets to custom cakes for your celebrations, we aim to provide an unforgettable experience of taste and quality.
                   </p>
                   <p>
-                    <strong>Location:</strong> Total Parco AMG Filling Station, Adda Lar BWP Road, Multan.
+                    <strong>Location:</strong> MM Plaza, Shujabad Road, Adda Basti Lar, Multan.
                   </p>
                   <p>
-                    <strong>Contact:</strong> 0322 4741111
+                    <strong>Contact:</strong> 0309-7862821
                   </p>
                 </div>
               </DialogContent>
@@ -334,8 +334,8 @@ function Layout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center gap-2">
                 {!isAdmin && (
                   <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="hidden sm:flex border-neutral-200 text-neutral-600 hover:bg-neutral-50"><ShoppingCart className="w-4 h-4 mr-1.5"/> My Orders</Button>
+                    <DialogTrigger render={<Button variant="outline" size="sm" className="hidden sm:flex border-neutral-200 text-neutral-600 hover:bg-neutral-50" />}>
+                      <ShoppingCart className="w-4 h-4 mr-1.5"/> My Orders
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-xl max-h-[80vh] overflow-y-auto">
                       <DialogHeader>
@@ -369,37 +369,48 @@ function Layout({ children }: { children: React.ReactNode }) {
         <div className="max-w-7xl mx-auto px-4 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
           <div>
             <Link to="/" className="flex items-center gap-2 mb-6 opacity-90 hover:opacity-100 transition-opacity">
-              <div className="bg-orange-500 text-white p-1 rounded-md">
-                <Utensils className="w-5 h-5" />
+              <div className="bg-[#E85D04] text-white p-1 rounded-md w-8 h-8 flex items-center justify-center font-bold text-lg">
+                DS
               </div>
-              <span className="text-2xl font-bold tracking-tight text-white">Café Eleven</span>
+              <span className="text-2xl font-bold tracking-tight text-white">Dasi Sweets & Bakers</span>
             </Link>
-            <p className="leading-relaxed mb-6 font-light">The absolute best in taste, combining fast food classics with rich desi flavors. Serving hot & fresh meals directly to your door.</p>
+            <p className="leading-relaxed mb-6 font-light">Your trusted destination for the finest quality traditional sweets, fresh bakery items, and custom celebration cakes.</p>
           </div>
           <div>
-            <h4 className="text-sm font-semibold tracking-wider uppercase text-zinc-500 mb-6 font-mono">Location</h4>
-            <p className="flex items-start gap-3 hover:text-white transition-colors">
-              <MapPin className="w-5 h-5 shrink-0 mt-0.5 text-orange-500" /> 
-              Total Parco AMG Filling Station,<br/>Adda Lar BWP Road, Multan
-            </p>
+            <h4 className="text-sm font-semibold tracking-wider uppercase text-zinc-500 mb-6 font-mono">Location & Hours</h4>
+            <div className="space-y-4">
+              <p className="flex items-start gap-3 hover:text-white transition-colors">
+                <MapPin className="w-5 h-5 shrink-0 mt-0.5 text-[#E85D04]" /> 
+                <a href="https://maps.app.goo.gl/oe3eKQUwapHgYd1w7" target="_blank" rel="noreferrer">MM Plaza, Shujabad Road, Adda Basti Lar, Multan</a>
+              </p>
+              <p className="flex items-center gap-3 hover:text-white transition-colors"><Clock className="w-5 h-5 text-[#E85D04]" /> Open Daily: 8:00 AM - 11:00 PM</p>
+            </div>
           </div>
           <div>
             <h4 className="text-sm font-semibold tracking-wider uppercase text-zinc-500 mb-6 font-mono">Contact</h4>
-            <p className="flex items-center gap-3 hover:text-white transition-colors mb-4"><Phone className="w-5 h-5 text-orange-500" /> 0322 4741111</p>
+            <p className="flex items-center gap-3 hover:text-white transition-colors mb-4">
+              <Phone className="w-5 h-5 text-[#E85D04]" /> <a href="tel:03097862821">0309-7862821</a>
+            </p>
+            <p className="flex items-center gap-3 hover:text-white transition-colors mb-4">
+              <MessageCircle className="w-5 h-5 text-[#E85D04]" /> <a href="https://wa.me/923097862821" target="_blank" rel="noreferrer">0309-7862821 (WhatsApp)</a>
+            </p>
           </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 mt-12 pt-8 border-t border-zinc-900 text-center text-sm font-light">
+          <p>© 2026 Dasi Sweets & Bakers. All rights reserved.</p>
         </div>
       </footer>
 
       {/* Floating WhatsApp Button */}
       {!isAdmin && (
       <a 
-        href="https://wa.me/923224741111" 
+        href="https://wa.me/923097862821" 
         target="_blank" 
         rel="noreferrer" 
         className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-[0_8px_30px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform flex items-center justify-center group"
       >
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.964 9.964 0 001.333 4.976L2 22l5.17-1.353a9.94 9.94 0 004.842 1.253h.004c5.505 0 9.988-4.478 9.989-9.984 0-2.669-1.037-5.176-2.922-7.062A9.935 9.935 0 0012.012 2zm5.498 14.288c-.244.693-1.42 1.341-1.956 1.4-1.396.155-3.093-.538-5.328-2.617-2.64-2.464-3.528-5.59-3.766-6.027-.238-.437-.023-.9.183-1.12.383-.418.846-.499 1.1-.499.187 0 .376-.008.528.349.208.486.684 1.668.746 1.792.06.126.113.315-.03.546-.143.232-.239.333-.42.546-.169.201-.365.419-.153.782.212.363.955 1.576 2.052 2.553 1.411 1.255 2.553 1.636 2.91 1.8.358.163.59.135.807-.11.26-.296.883-1.114 1.127-1.493.243-.38.486-.337.896-.183.411.155 2.593 1.222 3.037 1.442.444.22.738.337.848.523.111.186.111 1.054-.133 1.747z" />
+          <path fillRule="evenodd" clipRule="evenodd" d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.964 9.964 0 001.333 4.976L2 22l5.17-1.353a9.94 9.94 0 004.842 1.253h.004c5.505 0 9.988-4.478 9.989-9.984 0-2.669-1.037-5.176-2.922-7.062A9.935 9.935 0 0012.012 2zm5.498 14.288c-.244.693-1.42 1.341-1.956 1.4-1.396.155-3.093-.538-5.328-2.617-2.64-2.464-3.528-5.59-3.766-6.027-.238-.437-.023-.9.183-1.12.383-.418.846-.499 1.1-.499.187 0 .376-.008.528.349.208.486.684 1.668.746 1.792.06.126.113.315-.03.546-.143.232-.239.333-.42.546-.169.201-.365.419-.153.782.212.363.955 1.576 2.052 2.553 1.411 1.255 2.553 1.636 2.91 1.8.358.163.59.135.807-.11.26-.296.883-1.114 1.127-1.493.243-.38.486-.337.896-.183.411.155 2.593 1.222 3.037 1.442.444.22.738.337.848.523.111.186.111 1.054-.133 1.747z" />
         </svg>
         <span className="absolute right-full mr-4 bg-zinc-900 text-white text-sm font-medium px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">
           Order on WhatsApp
@@ -468,8 +479,8 @@ function CartView({ cartItems, setCartItems, user, isAdmin }: any) {
 
     if (method === 'whatsapp') {
       const itemsList = cartItems.map((i:any)=> `${i.quantity}x ${i.name}`).join('%0A');
-      const waMsg = `Hello Cafe Eleven!%0AI want to place an order.%0A%0A*Items:*%0A${itemsList}%0A%0A*Total:* Rs ${total}%0A*Name:* ${fullName}%0A*Address:* ${address}%0A*Phone:* ${phone}%0A*Special Instructions:* ${instruction || 'None'}%0A%0APlease confirm my order.`;
-      window.open(`https://wa.me/923224741111?text=${waMsg}`, '_blank');
+      const waMsg = `Hello Dasi Sweets & Bakers!%0AI want to place an order.%0A%0A*Items:*%0A${itemsList}%0A%0A*Total:* Rs ${total}%0A*Name:* ${fullName}%0A*Address:* ${address}%0A*Phone:* ${phone}%0A*Special Instructions:* ${instruction || 'None'}%0A%0APlease confirm my order.`;
+      window.open(`https://wa.me/923097862821?text=${waMsg}`, '_blank');
     } else {
       alert("Order placed successfully! We will contact you shortly.");
     }
@@ -508,6 +519,24 @@ function CartView({ cartItems, setCartItems, user, isAdmin }: any) {
 
       {cartItems.length > 0 && (
         <div className="border-t border-[#F48C06]/20 pt-4 mt-4">
+          {total >= 2500 ? (
+            <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded-xl mb-4 text-sm font-semibold flex items-start gap-2">
+              <Star className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+              <div>
+                <p>Congratulations! 🎉</p>
+                <p className="font-normal text-xs mt-1">You are eligible to win multi-lac prizes in our special Eid Ul Azha offer!</p>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-orange-50 border border-orange-200 text-orange-700 p-3 rounded-xl mb-4 text-sm font-medium flex items-start gap-2">
+              <Star className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" />
+              <div>
+                <p>Eid Ul Azha Special Offer! 🎁</p>
+                <p className="font-normal text-xs mt-1">Add items worth Rs {2500 - total} more to be eligible to win multi-lac prizes and gifts!</p>
+              </div>
+            </div>
+          )}
+
           <div className="flex justify-between text-lg font-bold text-[#370617] mb-4">
             <span>Total</span>
             <span>Rs {total}</span>
@@ -578,6 +607,13 @@ function Home() {
 
   return (
     <div className="bg-zinc-50">
+      {/* Eid Offer Announcement Bar */}
+      <div className="bg-[#D00000] text-white text-center py-2 px-4 shadow-md sticky top-0 z-30">
+        <p className="text-sm font-semibold animate-pulse">
+          🌙 EID UL AZHA SPECIAL: Buy items worth Rs 2500 or more and get a chance to win multi-lac prizes and gifts! 🎁
+        </p>
+      </div>
+
       {/* Hero */}
       <section className="relative w-full h-[85vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0 bg-black/60 z-10" />
@@ -588,18 +624,18 @@ function Home() {
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 lg:px-8 w-full">
           <div className="max-w-3xl">
-            <Badge className="bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border-orange-500/50 mb-6 font-mono tracking-widest uppercase">Taste the Difference</Badge>
-            <h1 className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter leading-[0.95]">
-              The Ultimate <br/> <span className="text-orange-500">Food Stop.</span>
+            <Badge className="bg-[#F48C06]/20 text-[#F48C06] hover:bg-[#F48C06]/30 border-[#F48C06]/50 mb-6 font-mono tracking-widest uppercase">Taste the Tradition</Badge>
+            <h1 className="text-5xl md:text-8xl font-black text-white mb-6 tracking-tighter leading-[0.95]">
+              Dasi <span className="text-[#F48C06]">Sweets.</span>
             </h1>
             <p className="text-xl md:text-2xl text-zinc-300 font-light mb-10 max-w-xl leading-relaxed">
-              Craving something delicious? Get the best fast food and desi cuisine delivered hot & fresh to your door in Multan.
+              Celebrate this Eid Ul Azha with our premium Sweets, Pastries, Nimko, Cosmetics, and Drinks. Spend Rs 2500 and win big!
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-8 h-14 text-lg font-medium shadow-[0_0_40px_rgba(234,88,12,0.4)] transition-all hover:scale-105" onClick={()=>{
+              <Button size="lg" className="bg-[#E85D04] hover:bg-[#D00000] text-white rounded-full px-8 h-14 text-lg font-medium shadow-[0_0_40px_rgba(234,88,12,0.4)] transition-all hover:scale-105" onClick={()=>{
                  document.getElementById('menu')?.scrollIntoView({behavior:'smooth'})
               }}>
-                Order Online
+                Explore Menu
               </Button>
               <Button size="lg" variant="outline" className="border-white/20 text-white bg-white/5 hover:bg-white/10 backdrop-blur-md rounded-full px-8 h-14 text-lg font-medium" onClick={()=>{
                  document.getElementById('gallery')?.scrollIntoView({behavior:'smooth'})
@@ -642,59 +678,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Ambiance / Gallery */}
-      <section id="gallery" className="bg-zinc-900 text-white py-24">
-         <div className="max-w-7xl mx-auto px-4 lg:px-8">
-            <div className="mb-16 md:flex justify-between items-end">
-              <div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">Visit Cafe Eleven</h2>
-                <div className="w-20 h-1.5 bg-orange-500 rounded-full mb-6" />
-                <p className="text-zinc-400 max-w-xl text-lg font-light">Experience our beautiful indoor and outdoor dinning areas, soda shop, and tuk shop. Located centrally in Multan for your convenience.</p>
-              </div>
-              <a href="https://www.google.com/maps/place/Cafe+11/@30.0193461,71.4956848" target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", className: "border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white mt-6 md:mt-0 rounded-full h-12 px-6" })}>
-                 Get Directions <MapPin className="w-4 h-4 ml-2" />
-              </a>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-               <div className="group relative h-[300px] rounded-2xl overflow-hidden block">
-                  <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=60&w=600&auto=format&fit=crop" loading="lazy" decoding="async" alt="Coffee Bar Section" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                  <div className="absolute bottom-6 left-6 pointer-events-none">
-                    <h3 className="text-xl font-bold text-white">Coffee Bar Section</h3>
-                  </div>
-               </div>
-               <div className="group relative h-[300px] rounded-2xl overflow-hidden block">
-                  <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=60&w=600&auto=format&fit=crop" loading="lazy" decoding="async" alt="External Refreshment" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                  <div className="absolute bottom-6 left-6 pointer-events-none">
-                    <h3 className="text-xl font-bold text-white">External Refreshment</h3>
-                  </div>
-               </div>
-               <div className="group relative h-[300px] rounded-2xl overflow-hidden block">
-                  <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=60&w=600&auto=format&fit=crop" loading="lazy" decoding="async" alt="Dining Tables" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                  <div className="absolute bottom-6 left-6 pointer-events-none">
-                    <h3 className="text-xl font-bold text-white">Dining Tables</h3>
-                  </div>
-               </div>
-               <div className="group relative h-[300px] rounded-2xl overflow-hidden block">
-                  <img src="https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=60&w=600&auto=format&fit=crop" loading="lazy" decoding="async" alt="Super Market Area" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                  <div className="absolute bottom-6 left-6 pointer-events-none">
-                    <h3 className="text-xl font-bold text-white">Super Market Area</h3>
-                  </div>
-               </div>
-               <div className="group relative h-[300px] rounded-2xl overflow-hidden block">
-                  <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=60&w=600&auto=format&fit=crop" loading="lazy" decoding="async" alt="Exterior Building View" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                  <div className="absolute bottom-6 left-6 pointer-events-none">
-                    <h3 className="text-xl font-bold text-white">Exterior Building View</h3>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </section>
+      {/* End of Menu Section */}
     </div>
   )
 }
@@ -706,12 +690,12 @@ function ProductCard({ product }: { product: any }) {
   const isDeal = product.category === 'Deals' || product.name.toLowerCase().includes('deal');
 
   const handleAddToCart = () => {
-     const saved = localStorage.getItem('cafe11_cart');
+     const saved = localStorage.getItem('dasi_sweets_cart');
      let cart = saved ? JSON.parse(saved) : [];
      const ex = cart.find((i:any)=>i.id === product.id);
      if(ex) { ex.quantity += 1; } else { cart.push({...product, quantity: 1}); }
-     localStorage.setItem('cafe11_cart', JSON.stringify(cart));
-     window.dispatchEvent(new Event('cafe11_cartUpdate'));
+     localStorage.setItem('dasi_sweets_cart', JSON.stringify(cart));
+     window.dispatchEvent(new Event('dasi_sweets_cartUpdate'));
      if (showDeal) setShowDeal(false);
   }
 
@@ -951,12 +935,18 @@ function AdminProducts() {
 
   const seedData = async () => {
     try {
-      // Remove id before adding to Firestore so it auto-generates
-      const dataToSeed = DEFAULT_DATA.map(({ id, ...rest }) => rest);
-      for (const item of dataToSeed) {
-        await addDoc(collection(db, 'products'), item);
+      // Clear existing first
+      if (confirm('This will delete all current products and seed default Dasi Sweets. Continue?')) {
+        for (const p of products) {
+            await deleteDoc(doc(db, 'products', p.id)).catch(e => console.error(e));
+        }
+        // Remove id before adding to Firestore so it auto-generates
+        const dataToSeed = DEFAULT_DATA.map(({ id, ...rest }) => rest);
+        for (const item of dataToSeed) {
+          await addDoc(collection(db, 'products'), item);
+        }
+        alert("Dasi Sweets data seeded!");
       }
-      alert("Sample data seeded! Let's eat.");
     } catch (e: any) {
       alert("Error seeding: " + e.message);
     }
@@ -1031,12 +1021,10 @@ function AdminProducts() {
       </Card>
 
       <div className="col-span-1 md:col-span-2 space-y-3">
-        {products.length === 0 && (
-          <div className="flex justify-between items-center bg-orange-50 p-4 rounded-xl border border-orange-200">
-            <p className="text-zinc-600">No products found. Start by adding one or seed example data.</p>
-            <Button onClick={seedData} variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-100">Seed Data</Button>
-          </div>
-        )}
+        <div className="flex justify-between items-center bg-orange-50 p-4 rounded-xl border border-orange-200">
+          <p className="text-zinc-600">You can seed the menu with the default Dasi Sweets items.</p>
+          <Button onClick={seedData} variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-100 flex-shrink-0 ml-4">Seed Dasi Sweets Data</Button>
+        </div>
         {products.map(p => (
           <div key={p.id} className="bg-white p-4 rounded-xl shadow-sm border border-zinc-100 flex justify-between items-center">
             <div className="flex items-center gap-4">
